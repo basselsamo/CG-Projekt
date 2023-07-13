@@ -1,60 +1,137 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>My first three.js app</title>
-        <script src="https://unpkg.com/three@0.125.2/build/three.js"></script>
-		<style>
-			body { margin: 0; }
-		</style>
-	</head>
-	<body>
-		<script type="module">
-            import { OrbitControls } from 'https://unpkg.com/three@0.125.2/examples/jsm/controls/OrbitControls.js';
+  <head>
+    <meta charset="utf-8" />
+    <title>Rubik's Cube</title>
+    <script src="https://unpkg.com/three@0.125.2/build/three.js"></script>
+    <style>
+      body {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="module">
+      import { OrbitControls } from "https://unpkg.com/three@0.125.2/examples/jsm/controls/OrbitControls.js";
 
-			const scene = new THREE.Scene();
-			const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1000 );
-			const renderer = new THREE.WebGLRenderer();
-			renderer.setSize( window.innerWidth, window.innerHeight );
-			document.body.appendChild( renderer.domElement );
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        1,
+        1000
+      );
+      const renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
 
-			camera.position.z = 5;
-			camera.position.y = 3;
-			camera.position.x = 2;
+      camera.position.z = 5;
+      camera.position.y = 3;
+      camera.position.x = 2;
 
-            var controls = new OrbitControls(camera, renderer.domElement);
-            
-			const geometry = new THREE.BoxBufferGeometry();
-			const material = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+      var controls = new OrbitControls(camera, renderer.domElement);
 
-			const cube = new THREE.Mesh( geometry, material );
-			scene.add( cube );
-			
-			addEventListener('keydown',(e)=>{
-				if(e.code === 'Space'){
-					cube.material.color.set(Math.random()*0xffffff);
-				}
-				
-				if(e.code === 'ArrowLeft'){
-					cube.position.x -= 1;
-				}
-				
-				if(e.code === 'ArrowRight'){
-					cube.position.x += 1;
-				}
-			})
-			
-			const animate = function () {
-				requestAnimationFrame( animate );
-                controls.update()
-				
-				cube.rotation.x += 0.01;
-				cube.rotation.y += 0.01;
+      // Define an Array for colors for the Rubik's Cube
+      const cubeSize = 1;
+      const colors = [
+        0xff0000, // Red
+        0x00ff00, // Green
+        0x0000ff, // Blue
+        0xffff00, // Yellow
+        0xffa500, // Orange
+        0xffffff, // White
+      ];
 
-				renderer.render( scene, camera );
-			};
+      // Function to create a cubelet
+      function createCubelet(x, y, z, color) {
+        const cubeletGeometry = new THREE.BoxGeometry(
+          cubeSize,
+          cubeSize,
+          cubeSize
+        );
+        const cubeletMaterial = new THREE.MeshBasicMaterial({ color });
+        const cubeletMesh = new THREE.Mesh(cubeletGeometry, cubeletMaterial);
+        cubeletMesh.position.set(x, y, z);
+        scene.add(cubeletMesh);
+        return cubeletMesh;
+      }
 
-			animate();
-		</script>
-	</body>
+      // Create the Rubik Cube
+      const cubelets = [];
+      for (let x = -1; x <= 1; x++) {
+        for (let y = -1; y <= 1; y++) {
+          for (let z = -1; z <= 1; z++) {
+            if (Math.abs(x) + Math.abs(y) + Math.abs(z) === 2) {
+              const cubelet = createCubelet(
+                x * cubeSize,
+                y * cubeSize,
+                z * cubeSize,
+                colors[0]
+              );
+              cubelets.push(cubelet);
+            } else if (Math.abs(x) + Math.abs(y) + Math.abs(z) === 3) {
+              const cubelet = createCubelet(
+                x * cubeSize,
+                y * cubeSize,
+                z * cubeSize,
+                colors[1]
+              );
+              cubelets.push(cubelet);
+            } else {
+              const cubelet = createCubelet(
+                x * cubeSize,
+                y * cubeSize,
+                z * cubeSize,
+                colors[2]
+              );
+              cubelets.push(cubelet);
+            }
+          }
+        }
+      }
+
+      cubelets.forEach((cubelet, index) => {
+        const position = cubelet.position.clone().divideScalar(cubeSize);
+        if (position.x === 1) {
+          cubelet.material.color.set(colors[3]); // Yellow
+        } else if (position.x === -1) {
+          cubelet.material.color.set(colors[4]); // Orange
+        } else if (position.y === 1) {
+          cubelet.material.color.set(colors[5]); // White
+        }
+      });
+
+      // Select a cubelet for interaction
+      const cubelet = cubelets[0]; // Select the first cubelet from the cubelets array
+
+      // Add event listener to the cubelet
+      cubelet.addEventListener("click", () => {
+        // Perform an action when the cubelet is clicked
+        console.log("Cubelet clicked!");
+      });
+
+      addEventListener("keydown", (e) => {
+        if (e.code === "Space") {
+          Cubelet.material.color.set(Math.random() * 0xffffff);
+        }
+
+        if (e.code === "ArrowLeft") {
+          Cubelet.position.x -= 1;
+        }
+
+        if (e.code === "ArrowRight") {
+          Cubelet.position.x += 1;
+        }
+      });
+
+      const animate = function () {
+        requestAnimationFrame(animate);
+        controls.update();
+
+        renderer.render(scene, camera);
+      };
+
+      animate();
+    </script>
+  </body>
 </html>
