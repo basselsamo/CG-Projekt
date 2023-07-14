@@ -50,11 +50,24 @@
           cubeSize
         );
         const cubeletMaterial = new THREE.MeshBasicMaterial({ color });
+        const cubeletLineMaterial = new THREE.LineBasicMaterial({
+          color: 0x000000,
+        });
         const cubeletMesh = new THREE.Mesh(cubeletGeometry, cubeletMaterial);
-        cubeletMesh.position.set(x, y, z);
+        const edges = new THREE.EdgesGeometry(cubeletGeometry);
+        const cubeletLines = new THREE.LineSegments(edges, cubeletLineMaterial);
+        const cubeletGroup = new THREE.Group();
+        cubeletGroup.add(cubeletMesh);
+        cubeletGroup.add(cubeletLines);
+        cubeletGroup.position.set(x, y, z);
+
+        scene.add(cubeletGroup);
+        return cubeletGroup;
+      }
+      /*cubeletMesh.position.set(x, y, z);
         scene.add(cubeletMesh);
         return cubeletMesh;
-      }
+      }*/
 
       // Create the Rubik's Cube
       const cubelets = [];
@@ -143,8 +156,18 @@
         }
       });
 
+      //let counter = 0;
+
       const animate = function () {
         requestAnimationFrame(animate);
+        /* counter += 1;
+
+        cubelets.forEach((cubelet) => {
+          cubelet.position.x = 10 * Math.sin(counter / 30);
+          cubelet.position.y = 10 * Math.cos(counter / 22);
+          cubelet.position.z = 10 * Math.cos(counter / 17);
+        });*/
+
         controls.update();
 
         renderer.render(scene, camera);
