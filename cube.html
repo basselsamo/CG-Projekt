@@ -56,6 +56,25 @@
         return cubeletMesh;
       }
 
+      // Create the Rubik's Cube
+      const cubelets = [];
+      let colorIndex = 0;
+      for (let x = -1; x <= 1; x++) {
+        for (let y = -1; y <= 1; y++) {
+          for (let z = -1; z <= 1; z++) {
+            const cubelet = createCubelet(
+              x * cubeSize,
+              y * cubeSize,
+              z * cubeSize,
+              colors[colorIndex]
+            );
+            cubelets.push(cubelet);
+            colorIndex = (colorIndex + 1) % colors.length;
+          }
+        }
+      }
+
+      /*
       // Create the Rubik Cube
       const cubelets = [];
       for (let x = -1; x <= 1; x++) {
@@ -99,7 +118,7 @@
         } else if (position.y === 1) {
           cubelet.material.color.set(colors[5]); // White
         }
-      });
+      });*/
 
       // Select a cubelet for interaction
       const cubelet = cubelets[0]; // Select the first cubelet from the cubelets array
